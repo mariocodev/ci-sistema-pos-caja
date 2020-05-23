@@ -1,5 +1,5 @@
 
-# Sistema-POS-CAJA <a href="https://github.com/willwashburn/phpamo/blob/master/license.txt"><img src="https://camo.githubusercontent.com/017199f6ddb42287521bba1dc11cb5dd8afaa365/68747470733a2f2f696d672e736869656c64732e696f2f7061636b61676973742f6c2f77696c6c776173686275726e2f706870616d6f2e7376673f7374796c653d666c61742d737175617265" alt="MIT License" data-canonical-src="https://img.shields.io/packagist/l/willwashburn/phpamo.svg?style=flat-square" style="max-width:100%;"></a>
+# Sistema-POS-CAJA <a href="https://github.com/setodimario/Sistema-POS-CAJA/blob/master/LICENSE"><img src="https://camo.githubusercontent.com/017199f6ddb42287521bba1dc11cb5dd8afaa365/68747470733a2f2f696d672e736869656c64732e696f2f7061636b61676973742f6c2f77696c6c776173686275726e2f706870616d6f2e7376673f7374796c653d666c61742d737175617265" alt="MIT License" data-canonical-src="https://img.shields.io/packagist/l/willwashburn/phpamo.svg?style=flat-square" style="max-width:100%;"></a>
 Aplicación web de sistema POS y Apertura / Cierre de CAJA. Basado en el framework Codeigniter, Bootstrap y Javascript (JSON, AJAX, CRUD).
 ## Funcionalidades
 <ul>
@@ -59,4 +59,4 @@ También debería funcionar en 5.4.8, pero le recomendamos encarecidamente que N
 </ul>
 
 ## Licencia
-MIT con términos de licencia <a href="https://codeigniter.com/userguide3/license.html">Codeigniter</a>.
+<a href="https://github.com/setodimario/Sistema-POS-CAJA/blob/master/LICENSE">MIT</a> con términos de licencia <a href="https://codeigniter.com/userguide3/license.html">Codeigniter</a>.
