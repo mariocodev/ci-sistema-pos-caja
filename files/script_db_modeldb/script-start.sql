@@ -3,7 +3,7 @@
 -- Host: localhost    Database: monteoli_saf_db
 -- ------------------------------------------------------
 -- Server version	5.7.14
-use `monteoli_saf_db`;
+use `adminbase_db`;
 INSERT INTO `usuarios` (`usuario_nombre`, `usuario_apellido`, `usuario_user`, `usuario_pass`, `usuario_estado`, `usuario_dateinsert`, `usuario_dateupdate`) 
 VALUES ('Miroslav', 'Valsorim', 'superadmin', 'e10adc3949ba59abbe56e057f20f883e', 'activo', NOW(), NOW()),
 ('Administrador', 'Sistema', 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'activo', NOW(), NOW());

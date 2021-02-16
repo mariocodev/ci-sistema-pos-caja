@@ -11,6 +11,9 @@ class Login extends CI_Controller {
 		}
 		$data = array();
 		$data['error'] = $this->session->flashdata('error');
+		$data['controller'] = 'admin/' . strtolower($this->router->class);		
+		$data['archivoJS']	= ucfirst($this->router->class);
+		
 		$this->load->view('html/Head');
 		$this->load->view('admin/Login_v', $data);
 		$this->load->view('html/Footer');
@@ -40,8 +43,11 @@ class Login extends CI_Controller {
 					'logueado'          => TRUE
 				);
 				$this->session->set_userdata($usuario_data);
-				var_dump($usuario_data);
-				redirect('Welcome');
+				//var_dump($usuario_data);
+				//redirect('Welcome');
+				echo json_encode(array(
+					"status" => TRUE
+				));
             } else {
             $this->session->set_flashdata('error', 'El usuario o la contraseña son incorrectos.');
             $this->index();
