@@ -1,9 +1,9 @@
 <?php
 //  Para imprimir ticket
 // Local
-//require '\application\third_party\ticket\autoload.php';
+require '\application\third_party\ticket\autoload.php';
 // Server
-require_once(APPPATH.'/third_party/ticket/autoload.php');
+//require_once(APPPATH.'/third_party/ticket/autoload.php');
 
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
@@ -25,6 +25,9 @@ class Pagos extends CI_Controller
         $this->load->model('clientes_m');
         $this->load->model('pagos_m');
         $this->load->model('auxiliar_m');
+        $this->load->model('usuarios_m');
+        $this->load->model('factura_m');
+        $this->load->model('parametros_m');
         date_default_timezone_set("America/Asuncion");
     }
 
@@ -126,7 +129,46 @@ class Pagos extends CI_Controller
 		$interval = $datetime1->diff($datetime2);
 		//$meses_cuotas = ( $interval->y * 12 ) + $interval->m;
 		$meses_cuotas = ((( $interval->y * 12 ) + $interval->m) + 1);
+
+        $userSucursal = $this->usuarios_m->obtener_por_id($this->session->userdata('usuario_id'))->sucursal_id;
+
+        if ($userSucursal == null || $userSucursal == null <= 0) {
+            echo $exito = json_encode(
+                array(
+                    "status"    => TRUE,
+                    "code"      => 404,
+                    "tipo"      => "error",
+                    "message"   => "El usuario no tiene definido una sucursal."
+                )
+            );
+            return;
+        }
         
+        if ($this->factura_m->getBySucursal($userSucursal) == null) {
+            echo $exito = json_encode(
+                array(
+                    "status"    => TRUE,
+                    "code"      => 404,
+                    "tipo"      => "error",
+                    "message"   => "No se registró ninguna factura."
+                )
+            );
+            return;
+        }
+        // Se verifica número de factura
+        $facturaNroActual = explode('-', $this->factura_m->getBySucursal($userSucursal)->nro_actual)[2];
+        $facturaNroHasta = explode('-', $this->factura_m->getBySucursal($userSucursal)->nro_hasta)[2];
+        if (!$this->currentNumberIsLessThanOrEqual($facturaNroActual, $facturaNroHasta)){
+            echo $exito = json_encode(
+                array(
+                    "status"    => TRUE,
+                    "code"      => 409,
+                    "tipo"      => "warning",
+                    "message"   => "El número de factura generado no puede ser mayor al número final de factura. Comuniquese con su Administrador."
+                )
+            );
+            return;
+        }
 		// Insertar la cabecera, el primero siempre es el titular
 		for ($i=0; $i < 1 ; $i++) {
             $data   = array(
@@ -139,9 +181,12 @@ class Pagos extends CI_Controller
                 'pago_cliente_cuotas'		=> $meses_cuotas,
                 'pago_cliente_monto_plan'   => $this->input->post('pago_cliente_detalle_monto_adicional')['0'],
                 'pago_cliente_estado'   	=> 'Pendiente',
-                'usuario_id'            	=> $this->session->userdata('usuario_id')
+                'usuario_id'            	=> $this->session->userdata('usuario_id'),
+                'sucursal_id'               => $userSucursal,
             );
         }
+        $generarFactura = ($this->input->post('generar_factura') != null) ? true:false;
+        
         $exito = $this->pagos_m->agregar_cabecera($data);
         // Insertar detalle
         $countsize = count($this->input->post('cliente_id'));
@@ -152,25 +197,78 @@ class Pagos extends CI_Controller
                 $data   = array(
                     'pago_cliente_id'					=> $exito,
                     'planes_clientes_id'    			=> $this->pagos_m->obtener_planes_cliente($cliente_id, 'planes_clientes_id'),
-                    'pago_cliente_detalle_monto_plan' 	=> $this->pagos_m->obtener_planes_cliente_costo($this->pagos_m->obtener_planes_cliente($cliente_id, 'plan_id'), $cliente_id),
-                    'pago_cliente_detalle_monto_adicional'   => $this->input->post('pago_cliente_detalle_monto_adicional')[$i]
+                    'pago_cliente_detalle_monto_plan' 	=> $monto_plan_detail = $this->pagos_m->obtener_planes_cliente_costo($this->pagos_m->obtener_planes_cliente($cliente_id, 'plan_id'), $cliente_id),
+                    'pago_cliente_detalle_subtotal'     => $monto_plan_detail = $monto_plan_detail * $meses_cuotas,
+                    'pago_cliente_detalle_monto_adicional'   => $monto_adicional_detail = $this->input->post('pago_cliente_detalle_monto_adicional')[$i],
+                    'pago_cliente_detalle_iva' => ($monto_plan_detail + $monto_adicional_detail) * $this->parametros_m->getbyCod("iva10")->param_valor
                 );
                 $this->pagos_m->agregar_detalle($data);
             }
-            // Si se ha insertado todos los detalles, saco la suma de los totales para insertarla en la cabecera
+            // Si se ha insertado todos los detalles, saco la suma de los totales para insertarla en la cabecera            
             if ($exito){
                 $data   = array(
                     'pago_cliente_estado'       => 'Pagado',
                     // Pagos plan + Adicional
-                    'pago_cliente_monto_plan'   => $total_plan  = $this->pagos_m->total_plan_adicional($exito),
-                    'pago_cliente_monto_iva'    => 0, // Formula del IVA
-                    //'pago_cliente_monto_total'  => ($total_plan + $total_iva = 0) // Total Planes + IVA
-                    'pago_cliente_monto_total'  => ($total_plan + $total_iva = 0) * ($meses_cuotas) // Total Planes + IVA
+                    'pago_cliente_monto_plan'   => $monto_total = $this->pagos_m->total_monto_plan($exito), // Monto plan
+                    'pago_cliente_monto_iva'    => $monto_iva = $this->pagos_m->total_monto_iva($exito), // Monto iva
+                    //  ( plan * cuotas) + adicional + IVA
+                    'pago_cliente_monto_total'  => (($monto_total * $meses_cuotas)+$this->pagos_m->total_monto_adicional($exito)+$monto_iva), 
+                    'factura_id'                => $this->factura_m->getBySucursal($userSucursal)->factura_id,
+                    'factura_nro'               => $this->generateNextNumberFactura($this->factura_m->getBySucursal($userSucursal)->nro_actual),
+                    'factura_ruc'               => $this->input->post('cliente_ruc'),
+                    'factura_razon_social'      => $generarFactura ? $this->input->post('cliente_nombre'): 'SIN NOMBRE',
+                    'factura_concepto'          => $this->input->post('factura_concepto'),
                 );
                 $exito = $this->pagos_m->actualizar_montos_cabecera(array('pago_cliente_id'  => $exito), $data);
+                // Se actualiza data de factura
+                if ($exito){
+                    $data = array(
+                        'nro_actual' => $this->generateNextNumberFactura($this->factura_m->getBySucursal($userSucursal)->nro_actual),
+                    );
+                    $this->factura_m->updateNroActual(array('factura_id' => $this->factura_m->getBySucursal($userSucursal)->factura_id), $data);
+                }
             }
-       }
-        echo $exito = json_encode(array("status" => TRUE));
+        }
+        echo $exito = json_encode(
+            array(
+                "status"    => TRUE,
+                "code"      => 200,
+                "tipo"      => "success",
+                "message"   => "Pago generado exitosamente."
+            )
+        );
+    }
+
+    public function getId()
+    {
+        $data = $this->usuarios_m->obtener_por_id($this->session->userdata('usuario_id'))->sucursal_id;
+        echo json_encode($data);
+    }
+    /**
+     * Se genera el número siguiente para la factura
+     */
+    public function generateNextNumberFactura($currentNroFactura){ 
+        //$position2 = explode('-', $currentNroFactura)[2] //[0]-[1]-[2]
+        // Eliminar ceros a la izquierda de la posición 2 del array [0]-[1]-[2]
+        $nroFactura = ltrim(explode('-', $currentNroFactura)[2], "0");
+        $number = $nroFactura + 1; // sumar 1
+        $length = strlen(explode('-', $currentNroFactura)[2]);
+        $nextNumber = substr(str_repeat(0, $length).$number, - $length);
+        $nextNumber = explode('-', $currentNroFactura)[0]."-".explode('-', $currentNroFactura)[1]."-".$nextNumber;
+        return $nextNumber;
+    }
+    /**
+     * Se compara si el número actual de factura es menor o igual que el número final de factura
+     */
+    public function currentNumberIsLessThanOrEqual($currentNroFactura, $nroFacturaHasta){
+        // Eliminar ceros a la izquierda
+        $nroFactura = ltrim($currentNroFactura, "0")+1; // sumar 1
+        $nroFacturaHasta = ltrim($nroFacturaHasta, "0");
+        if ($nroFactura <= $nroFacturaHasta){
+            return true;
+        }else{
+            return false;
+        }
     }
     
     // Ver detalle cabecera y detalle del ticket
@@ -241,7 +339,8 @@ class Pagos extends CI_Controller
 	
 	public function mostrar_ultimo_pago($cliente_id){
 		$data = $this->pagos_m->mostrar_ultimo_pago($cliente_id);
-        $dato = json_decode(json_encode($data));
+        echo json_encode($data);
+        /*$dato = json_decode(json_encode($data));
 		if ($dato != null){
 		echo '<div class="col-md-9" style="font-size:13px">';
 		echo '<div class="col-md-4 col-sm-4"><span class="label label-inverse">ÚLTIMO PAGO</span> Gs. '.$dato->pago_cliente_monto_total.'</div>';
@@ -250,11 +349,21 @@ class Pagos extends CI_Controller
 		echo '</div>';
 		}else{
 			//echo 'Primer pago todavía no se realizó';
-		}
+		}*/
 	}
-	
+
+    public function getTimbrado()
+    {
+        $data = $this->pagos_m->getTimbradoActivo();
+        echo $data->timbrado_id;
+        echo json_encode($data);
+    }
+	/**
+     * TICKET
+     */
 	public function ticket($ticket_id){
-        $nombre_impresora = "ImpresoraTermica";
+        echo json_encode($this->pagos_m->obtener_por_id($ticket_id));
+        $nombre_impresora = "ImpresoraTermica"; // ImpresoraTermica // Nitro PDF Creator (Pro 12)
         $connector = new WindowsPrintConnector($nombre_impresora);
         $printer = new Printer($connector);
         $printer -> initialize();

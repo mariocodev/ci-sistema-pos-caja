@@ -87,6 +87,8 @@ class Clientes extends CI_Controller
             'cliente_direccion'  => $this->input->post('cliente_direccion'),
             'cliente_tipo_id'    => $this->input->post('cliente_tipo_id'),
             'cliente_archivo'    => $this->input->post('cliente_archivo'),
+            'cliente_ruc'        => $this->input->post('cliente_ruc'),
+            'cliente_ruc_dv'     => $this->input->post('cliente_ruc_dv'),
             'cliente_dateinsert' => date("Y-m-d H:i:s"),
             'usuario_id'         => $this->session->userdata('usuario_id')
         );
@@ -132,7 +134,8 @@ class Clientes extends CI_Controller
             'cliente_fecha_nacimiento'  => $this->input->post('cliente_fecha_nacimiento'),
             'cliente_sexo'      => $this->input->post('cliente_sexo'),
             'cliente_direccion' => $this->input->post('cliente_direccion'),
-            //'cliente_archivo'    => $this->input->post('cliente_archivo'),
+            'cliente_ruc'       => $this->input->post('cliente_ruc'),
+            'cliente_ruc_dv'    => $this->input->post('cliente_ruc_dv'),
             'cliente_tipo_id'    => $this->input->post('cliente_tipo_id')
         );        
         // Cliente es titular?
@@ -238,6 +241,14 @@ class Clientes extends CI_Controller
     }
     public function planes_clientes_fecha_ingreso($cliente_id, $plan_id){
         $data = $this->clientes_m->planes_clientes_existe($cliente_id, $plan_id, NULL, NULL, null);
+        echo json_encode($data);
+    }
+
+    // Obtener cliente por ID
+    public function getById($cliente_id)
+    {
+        $data = $this->clientes_m->obtener_por_id($cliente_id);
+        //echo $data->cliente_nombre;
         echo json_encode($data);
     }
 

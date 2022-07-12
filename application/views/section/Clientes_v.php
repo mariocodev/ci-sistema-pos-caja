@@ -55,32 +55,6 @@
                     <div class="row">
                         <div class="col-md-3 col-sm-3">
                             <div class="form-group">
-                                <label for="cliente_ci" class="control-label">N° de C.I.</label>
-                                <input type="text" min="0" class="form-control" id="cliente_ci" name="cliente_ci"
-                                placeholder="Solo números" data-parsley-type="number">
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-3">
-                           <div class="form-group">
-                            <label for="usuario_estado" class="control-label">Tipo de cliente</label>
-                                <select class="form-control" id="cliente_tipo_id" name="cliente_tipo_id">
-                                    <?php foreach ($tbl_cliente_tipo as $row) {?>
-                                    <option value="<?= $row->cliente_tipo_id ?>"><?= $row->cliente_tipo_nombre ?></option>
-                                    <?php }?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class=" col-md-6 col-sm-6">
-                           <div class="form-group">
-                                <label for="cliente_id_padre" class="control-label">Selecciona titular</label>
-                                <select class="form-control" id="cliente_id_padre" name="cliente_id_padre" required>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-3">
-                            <div class="form-group">
                                 <label for="cliente_sexo" class="control-label">Sexo</label>
                                 <select class="form-control" id="cliente_sexo" name="cliente_sexo" required>
                                     <optgroup label="Selecciona">
@@ -90,6 +64,46 @@
                                 </select>   
                             </div>
                         </div>
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <label for="cliente_ci" class="control-label">N° de C.I.</label>
+                                <input type="text" min="0" class="form-control" id="cliente_ci" name="cliente_ci"
+                                placeholder="Solo números" data-parsley-type="number">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <label for="cliente_ruc" class="control-label">RUC</label>
+                                <input type="text" min="0" class="form-control" id="cliente_ruc" name="cliente_ruc"
+                                placeholder="Solo números" data-parsley-type="number">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <label for="cliente_ruc_dv" class="control-label">Dígito verificador</label>
+                                <input type="text" min="0" class="form-control" id="cliente_ruc_dv" name="cliente_ruc_dv"
+                                placeholder="Solo números" data-parsley-type="number">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                           <div class="form-group">
+                            <label for="usuario_estado" class="control-label">Tipo de cliente</label>
+                                <select class="form-control" id="cliente_tipo_id" name="cliente_tipo_id">
+                                    <?php foreach ($tbl_cliente_tipo as $row) {?>
+                                    <option value="<?= $row->cliente_tipo_id ?>"><?= $row->cliente_tipo_nombre ?></option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class=" col-md-9 col-sm-8">
+                           <div class="form-group">
+                                <label for="cliente_id_padre" class="control-label">Selecciona titular</label>
+                                <select class="form-control" id="cliente_id_padre" name="cliente_id_padre" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">                        
                         <div class="col-md-3 col-sm-3">
                             <div class="form-group">
                                 <label for="cliente_cel" class="control-label">Celular</label>
@@ -237,6 +251,13 @@
             $('#cliente_direccion').attr('required', false);
 		}
 	});
+    // CI = RUC primera vez
+    $('#cliente_ci').blur(function(){ 
+		let value = $(this).val();
+        if (value === "" ) return;
+        let ruc = $('[name="cliente_ruc"]').val();
+        if (ruc === "" ) $('[name="cliente_ruc"]').val(value);
+	});
     /**
     *   
     *   Agregar, editar, actualizar, eliminar
@@ -274,6 +295,8 @@
                 $('[name="cliente_sexo"]').val(data.cliente_sexo);
                 $('[name="cliente_cel"]').val(data.cliente_cel);
                 $('[name="cliente_direccion"]').val(data.cliente_direccion);
+                $('[name="cliente_ruc"]').val(data.cliente_ruc);
+                $('[name="cliente_ruc_dv"]').val(data.cliente_ruc_dv);
                 
                 $('#modal-form-agregar').modal('show'); // show bootstrap modal when complete loaded
                 $('.modal-title').text('Editar cliente'); // Set title to Bootstrap modal title
@@ -472,10 +495,10 @@
 		var cliente_id = $('#cliente_id').val();
 		
 		if (cliente_fn === ''){
-			console.log('No cumpleaños');
+			//console.log('No cumpleaños');
 			planes('-1', cliente_id);
 			}else{
-				console.log(cliente_fn);
+				//console.log(cliente_fn);
 				if (!cliente_id){ var cliente_id = 0;}
 				planes(cliente_fn, cliente_id);
 				}
@@ -571,7 +594,7 @@
     *
     *   insertar_prueba
     */
-    function insertar_prueba() {
+    /*function insertar_prueba() {
         $.ajax({
             url: "<?php echo site_url('welcome/insertar_prueba')?>",
             type:  'GET',
@@ -583,6 +606,6 @@
                 //alert(response);
             }
         });
-    }
+    }*/
 </script>
 

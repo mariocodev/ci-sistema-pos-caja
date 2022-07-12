@@ -16,6 +16,22 @@
 #form-agregar select.form-control{
     font-size: 11px
 }
+fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+    box-shadow:  0px 0px 0px 0px #000;
+    background-color: #f8f9fa
+}
+legend.scheduler-border {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+}
 </style>
 <div id="div-prueba"></div>
 <table id="datatable" class="table table-sm table-bordered" style="font-family: 'Arial'">
@@ -42,58 +58,104 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="myBtn">×</button>
-                <h4 class="modal-title col-md-2"></h4><div id="mostrar_ultimo_pago"></div>
+                <h4 class="modal-title col-md-2"></h4>
             </div>
             <div class="modal-body" style="font-size: 11px">
                 <form id="form-agregar" data-parsley-validate novalidate role="form" autocomplete="off">
                     <!--input type="hidden" id="cliente_id" value="" name="cliente_id"-->
-                    <div class="row">
-                       <div class="col-md-4 col-sm-6 col-xs-12">
-                           <div class="form-group">
-                                <label for="cliente_id_padre" class="control-label">Cliente</label>
-                                <select class="form-control select2" id="cliente_id_padre" name="cliente_id_padre" onChange="mostrar_detalle_cliente_adherente_planes(this), mostrar_ultimo_pago(this)" required>
-                                </select>
+                    <div class="row" style="background-color: #eff3f8">
+                        <div class="col-md-7 col-sm-7 col-xs-12" style="background-color: #fff">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <select class="form-control select2" id="cliente_id_padre" name="cliente_id_padre" onChange="mostrar_detalle_cliente_adherente_planes(this), mostrar_ultimo_pago(this)" required>
+                                    </select>
+                                    <div class="btn-group m-b-10">
+                                        <button type="button" class="btn btn-default waves-effect btn-xs m-b-5">
+                                            ÚLTIMO PAGO: <span class="label label-inverse" id="ultimo_pago"></span></button>
+                                        <button type="button" class="btn btn-default waves-effect btn-xs m-b-5">
+                                            MES/ES: <span class="label label-inverse" id="ultimo_pago_desde"></span>                                            
+                                        </button>
+                                        <button type="button" class="btn btn-default waves-effect btn-xs m-b-5">
+                                            FECHA PAGO: <span class="label label-inverse" id="ultimo_pago_hasta"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pago_cliente_fecha" class="control-label">Desde</label>
+                                    <input type="date" class="form-control" id="pago_cliente_fecha" value="<?=date("Y-m-d")?>" name="pago_cliente_fecha" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pago_cliente_fecha_hasta" class="control-label text-center">Hasta</label>
+                                    <input type="date" class="form-control" id="pago_cliente_fecha_hasta" value="<?=date("Y-m-d")?>" name="pago_cliente_fecha_hasta" required>								
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pago_forma_id" class="control-label">Forma de pago</label>
+                                    <select class="form-control" id="pago_forma_id" name="pago_forma_id" onChange="mostrar_pago_forma(this)" required></select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12 div_pago_monto_efectivo_tarjeta" style="display:none">
+                                <div class="form-group div_pago_efectivo">
+                                    <label for="pago_forma_efectivo_monto" class="control-label div_pago_efectivo"></label>
+                                    <input type="number" class="form-control div_pago_efectivo text-center" id="pago_forma_efectivo_monto" value="" name="pago_forma_efectivo_monto">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12 div_pago_monto_efectivo_tarjeta" style="display:none">
+                                <div class="form-group div_pago_tarjeta">
+                                    <label for="pago_forma_tarjeta_monto" class="control-label div_pago_tarjeta">Tarjeta</label>
+                                    <input type="number" class="form-control div_pago_tarjeta text-center" id="pago_forma_tarjeta_monto" value="" name="pago_forma_tarjeta_monto">
+                                </div>
+                            </div>   
                         </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                                <label for="pago_cliente_fecha" class="control-label">Desde</label>
-                                <input type="date" class="form-control" id="pago_cliente_fecha" value="<?=date("Y-m-d")?>" name="pago_cliente_fecha" required>
+
+                        <div class="col-md-5 col-sm-5 col-xs-12" style="background-color: #eff3f8;padding: 10px 0 5px;">
+                            <div class="col-md-4 col-sm-4 col-xs-4">
+                                <div class="form-group">
+                                    <div class="checkbox checkbox-primary">
+                                        <input id="generar_factura" type="checkbox" name="generar_factura" onclick="generarFactura(this.checked)">
+                                        <label for="generar_factura">¿Factura?</label>
+                                    </div>
+                                </div>
                             </div>
-							<div class="form-group col-md-6 col-sm-6 col-xs-12">
-                                <label for="pago_cliente_fecha_hasta" class="control-label text-center">Hasta</label>
-                                <input type="date" class="form-control" id="pago_cliente_fecha_hasta" value="<?=date("Y-m-d")?>" name="pago_cliente_fecha_hasta" required>								
+                            <style>
+                                input.uppercase { text-transform: uppercase; }
+                                input.uppercase::placeholder  { text-transform: lowercase;font-size: 12px}                            
+                            </style>
+                            <div class="col-md-8 col-sm-8 col-xs-8">
+                                <div class="form-group">
+                                    <input type="text" class="form-control uppercase" id="cliente_ruc" name="cliente_ruc" placeholder="factura a ruc de:" disabled style="font-size: 13px;" required="true">
+                                </div>
                             </div>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control uppercase" id="cliente_nombre" name="cliente_nombre" placeholder="factura a nombre de:" parsley-trigger="change" data-parsley-length="[3,45]" disabled style="font-size: 13px;" required="true">
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="factura_concepto" name="factura_concepto" placeholder="factura en concepto de:" parsley-trigger="change" data-parsley-length="[3, 350]" disabled required="true">
+                                </div>
+                            </div>
+                            <!--div style="clear:both"></div-->
+                            
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="submit" id="btn-guardar" onclick="enviar_datos()" class="btn btn-success waves-effect waves-light col-md-12 col-sm-12 col-xs-12" disabled="">
+                                        <i class="fa fa-check-circle"></i> 
+                                        Generar pago
+                                    </button>
+                                </div>
+                            </div> 
+
                         </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                           <div class="form-group">
-                                <label for="pago_forma_id" class="control-label">Forma de pago</label>
-                                <select class="form-control" id="pago_forma_id" name="pago_forma_id" onChange="mostrar_pago_forma(this)" required>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12 div_pago_monto_efectivo_tarjeta" style="display:none">
-                            <div class="form-group div_pago_efectivo">
-                                <label for="pago_forma_efectivo_monto" class="control-label div_pago_efectivo"></label>
-                                <input type="number" class="form-control div_pago_efectivo text-center" id="pago_forma_efectivo_monto" value="" name="pago_forma_efectivo_monto">
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12 div_pago_monto_efectivo_tarjeta" style="display:none">
-							<div class="form-group div_pago_tarjeta">
-                                <label for="pago_forma_tarjeta_monto" class="control-label div_pago_tarjeta">Tarjeta</label>
-                                <input type="number" class="form-control div_pago_tarjeta text-center" id="pago_forma_tarjeta_monto" value="" name="pago_forma_tarjeta_monto">
-                            </div>
-                        </div>
-                        <div class="col-md-1 col-sm-1 col-xs-6" style="padding-top: 22px;">
-                            <div class="form-group">
-                                <button type="submit" id="btn-guardar" onclick="enviar_datos()" class="btn btn-success waves-effect waves-light" disabled=""><i class="fa fa-check-circle"></i></button>
-                            </div>
-                        </div>                                               
                     </div>
                 </form>
-				<div class="row" style="margin-bottom: 9px;">					
-						<div id="mostrar_ultimo_pago"></div>
-				</div>
                     <div class="row">
                        <table id="datatableFacturaDetalle" class="table table-bordered"
                             style="font-size: 12px">
@@ -160,33 +222,52 @@
                         <br>
                         <strong class="col-md-6 text-left pleft">Total monto adicional: </strong>Gs. <span id="pago_cliente_detalle_monto_adicional"></span>
                         <br>
-                        <strong class="col-md-6 text-left pleft">Total plan + adicional: </strong>Gs. <span id="total_pago"></span>
-						<br>
                         <strong class="col-md-6 text-left pleft">Cuotas: </strong><span id="pago_cliente_cuotas"></span> [ <span id="pago_cliente_desde_hasta"></span> ]
 						<br>
-                        <strong class="col-md-6 text-left pleft">Total con cuotas: </strong>Gs. <span id="pago_cliente_monto_total"></span>
+                        <hr style="margin: 0;border-bottom: 1px solid #c2c2c2;width: 85%;">
+                        <strong class="col-md-6 text-left pleft"></strong>Gs. <span style="font-weight:bold" id="subtotal_pago"></span>
+						<br>
+                        <strong class="col-md-6 text-left pleft">Total IVA: </strong>Gs. <span id="pago_cliente_monto_iva"></span>
+						<br>
+                        <hr style="margin: 0;border:0;border-bottom: 1px solid seagreen;width: 85%;">
+                        <strong class="col-md-6 text-left pleft">TOTAL PAGO: </strong><span style="background-color: seagreen;color: antiquewhite;padding: 4px;border-radius: 0 0 5px 5px;" id="pago_cliente_monto_total"></span>
                     </div>
                 </div>
                 <hr>
+                
+                <fieldset class="scheduler-border" id="detailFactura">
+                    <legend class="scheduler-border" id="factura_nro">Detalle de la factura: </legend>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <strong class="col-md-4 text-left pleft">RUC: </strong><span id="factura_ruc"></span><br>
+                        <strong class="col-md-4 text-left pleft">Razón social: </strong><span id="factura_razon_social"></span>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <strong class="col-md-3 text-left pleft">Concepto: </strong><span id="factura_concepto"></span>
+                    </div>
+                </fieldset>
                 <div class="row">
                     <table id="datatableVerDetalle" class="table table-bordered" style="font-size: 12px">
                         <thead class="label-gris-claro text-center">
                             <tr>
                                 <th data-priority="1" class="text-center" style="width:50px">ID</th>
                                 <th style="width:350px !important" class="text-center">Cliente</th>
-                                <th class="text-center">Edad</th>
-                                <th class="text-center">Plan</th>
+                                <!--th class="text-center">Edad</th>
+                                <th class="text-center">Plan</th-->
                                 <th class="text-center">Monto Plan</th>
-                                <th style="width:120px" class="text-center">Monto adicional</th>
+                                <th class="text-center">Monto adicional</th>
+                                <th class="text-center">SUBTOTAL</th>
+                                <th class="text-center">IVA</th>
                             </tr>
                         </thead>
                         <tbody id="datatableVerDetalleBody">                            
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="4" class="text-right">Total</th>
-                                <th class="text-center"><span id="pago_cliente_monto_plan"></th>
-                                <th class="text-center"><span id="pago_cliente_detalle_monto_adicional"></th>
+                                <th colspan="2" class="text-right">Total</th>
+                                <th class="text-center">G. <span id="pago_cliente_monto_plan"></th>
+                                <th class="text-center">G. <span id="pago_cliente_detalle_monto_adicional"></th>
+                                <th class="text-center">G. <span id="pago_cliente_detalle_subtotal"></th>
+                                <th class="text-center">G. <span id="pago_cliente_detalle_iva"></th>
                             </tr>
                         </tfoot>
                     </table>                        
@@ -291,7 +372,7 @@
             }
         });
         // Botones cabecera
-        $("div.btn-datatable").html('<a id="refresh" class="btn btn-default waves-effect waves-light"><i class="fa fa-refresh"></i></a><a id="agregarRegistro" class="btn-agregar">Crear ticket de pago <i class="fa fa-ticket"></i></a>');
+        $("div.btn-datatable").html('<a id="refresh" class="btn btn-default waves-effect waves-light"><i class="fa fa-refresh"></i></a><a id="agregarRegistro" class="btn-agregar">Generar pago <i class="fa fa-ticket"></i></a>');
         //  Acciones de los botones
         $('#agregarRegistro').click( function () {agregar();} );
         $('#refresh').click( function (){$('#datatable').dataTable().fnClearTable();});
@@ -316,7 +397,8 @@
         // Inicializar a 0 datataable
         $('#datatableFacturaDetalle').dataTable().empty(); // Se vacía datatable
         $('#datatableFacturaDetalle_wrapper').hide(); // Se oculta datatable wrap
-        console.log('abrir modal agregar');
+        $('#form-agregar')[0].reset();
+        //console.log('abrir modal agregar');
         //$('#form-agregar').reset();
         $(".div_pago_monto_efectivo_tarjeta").css('display', 'none');
         $('#pago_forma_efectivo_monto, #pago_forma_tarjeta_monto').val('');
@@ -352,9 +434,10 @@
     }
 
     function ver_detalle(id) {
+        $('legend#factura_nro').empty();
         $.ajax({
             url: "<?=base_url(strtolower($this->router->class.'/ver_detalle/')); ?>" + id,
-            type: "POST",
+            type: "GET",
             dataType: "JSON",
             success: function(data) {
                 $('span#cliente').html(data.cliente);
@@ -367,14 +450,28 @@
                 $('span#pago_cliente_estado').html(data.pago_cliente_estado);
                 $('span#pago_cliente_monto_plan').html(data.pago_cliente_monto_plan);
                 $('span#pago_cliente_detalle_monto_adicional').html(data.pago_cliente_detalle_monto_adicional);
+                $('span#pago_cliente_detalle_iva').html(data.pago_cliente_detalle_iva);
+                $('span#pago_cliente_detalle_subtotal').html(data.pago_cliente_detalle_subtotal);
                 $('span#total_pago').html(data.total_pago);
                 $('span#pago_cliente_cuotas').html(data.pago_cliente_cuotas);
-                $('span#pago_cliente_monto_total').html(data.pago_cliente_monto_total);
+                $('span#subtotal_pago').html(data.subtotal_pago);
+                $('span#pago_cliente_monto_iva').html(data.pago_cliente_monto_iva);
+                $('span#pago_cliente_monto_total').html("Gs. " + data.pago_cliente_monto_total);
                 $('span#pago_cliente_desde_hasta').html(data.pago_cliente_desde_hasta);
                 $('span#cobrador').html(data.cobrador);
-                
+                $('legend#factura_nro').append("Detalle de la factura: " + data.factura_nro);
+                $('span#factura_ruc').html(data.factura_ruc);
+                $('span#factura_razon_social').html(data.factura_razon_social);
+                $('span#factura_concepto').html(data.factura_concepto);
+                console.log(data.factura_nro);
+                if (data.factura_nro === null)
+                    $('#detailFactura').hide();
+                    else
+                        $('#detailFactura').show();
+                    
+
                 $('#modal-form-ver-detalle').modal('show'); // show bootstrap modal when complete loaded
-                $('.modal-title').text('Detalles del Ticket n° ' + id); // Set title to Bootstrap modal title
+                $('.modal-title').text('Detalles del pago n° ' + id); // Set title to Bootstrap modal title
                 
                 //planes(data.cliente_fecha_nacimiento, data.cliente_id);
                 //planes_clientes_fecha_ingreso(id, 0)
@@ -403,10 +500,12 @@
                     var nuevafila= "<tr><td class='text-center'>" +
                     response.data[i].cliente_id + "</td><td>" +
                     response.data[i].cliente + "</td><td class='text-center'>" +
-                    response.data[i].edad + "</td><td>" +
-                    response.data[i].plan + "</td><td class='text-center'>" +
+                    //response.data[i].edad + "</td><td>" +
+                    //response.data[i].plan + "</td><td class='text-center'>" +
                     response.data[i].pago_cliente_detalle_monto_plan + "</td><td class='text-center'>" +
-                    response.data[i].pago_cliente_detalle_monto_adicional + "</td class='text-center'></tr>"
+                    response.data[i].pago_cliente_detalle_monto_adicional + "</td><td class='text-center'>" +
+                    response.data[i].pago_cliente_detalle_subtotal + "</td><td class='text-center'>" + 
+                    response.data[i].pago_cliente_detalle_iva + "</td></tr>"
 
                     $("#datatableVerDetalleBody").append(nuevafila).fadeIn();
                 }
@@ -431,15 +530,17 @@
             url: url,
             type: "POST",
             data: data,
-            //dataType: "JSON",
+            dataType: "JSON",
             success: function(data) {
                 //if success close modal and reload ajax table
                 $('#modal-form-agregar').modal('hide');
+                $('#form-agregar')[0].reset();
                 $('#datatable').dataTable().fnDraw('page'); // Recargar en la misma página
-                notificacion("success", "Ticket guardado!", "toast-top-right");
+                
+                notificacion(data.tipo, data.message, "toast-top-right");
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                notificacion("error", "Error agregando / actualizando datos!", "toast-top-right");
+            error: function(jqXHR, textStatus, errorThrown, data) {
+                notificacion("error", data.message, "toast-top-right");
             }
         });
     }
@@ -453,15 +554,15 @@
         $("#form-agregar").submit(function (e) {
             e.preventDefault();
             e.stopImmediatePropagation();
-            console.log("ingreso al evento");
+            //console.log("sending...");
             $("#btn-guardar").prop("disabled", true); // Se bloquea botón Generar ticket al enviar form
-            guardar();
+            guardar();            
           });
     }
 
     function eliminar(id) {
         swal({
-            title: "¿Anular éste ticket?",
+            title: "¿Anular éste pago?",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: 'btn-danger',
@@ -492,18 +593,30 @@
         $('#datatableFacturaDetalle').DataTable().destroy();
         enviar_cliente_id(sel.value);
         $("#btn-guardar").prop("disabled", false);
+        //
+        $("#generar_factura").prop("checked", true);
+        generarFactura(true);
+       
     }
 	function mostrar_ultimo_pago(sel){
-        //alert(sel.value);
-		console.log(sel.value);
+        if (sel.value === undefined ) return
 		$.ajax({
             url: "<?=base_url(strtolower($this->router->class.'/mostrar_ultimo_pago/')); ?>" + sel.value,
-            type:  'POST',
+            type:  'GET',
+            dataType: "JSON",
             beforeSend: function () {
                 $("#mostrar_ultimo_pago").html("Procesando datos del último pago, espere por favor...");
             },
             success:  function (response) {
-                $("#mostrar_ultimo_pago").html(response);
+                if (response != null){
+                    $('span#ultimo_pago').html("Gs. " + response.pago_cliente_monto_total);
+                    $('span#ultimo_pago_desde').html(response.pago_cliente_desde_hasta);
+                    $('span#ultimo_pago_hasta').html(response.pago_cliente_dateinsert);
+                }else{
+                    $('span#ultimo_pago').html("");
+                    $('span#ultimo_pago_desde').html("");
+                    $('span#ultimo_pago_hasta').html("");
+                }
             }
         });
     }
@@ -511,7 +624,7 @@
     function mostrar_pago_forma(sel){
         // Se setea los campos por cada cambio
         $('#pago_forma_efectivo_monto, #pago_forma_tarjeta_monto').val('');
-        console.log(sel.value);
+        //console.log(sel.value);
         if (sel.value == 4){
             $(".div_pago_monto_efectivo_tarjeta").css('display', 'block');
             $("label.div_pago_efectivo").text('Efectivo');
@@ -607,7 +720,7 @@
 
     function imprimir_ticket(ticket_id){
         swal({
-            title: "¿Imprimir ticket?",
+            title: "¿Imprimir pago?",
             type: "info",
             showCancelButton: true,
             confirmButtonClass: 'btn-success',
@@ -619,7 +732,7 @@
             $.ajax({
                 url:"<?=base_url(strtolower($this->router->class.'/ticket')); ?>/" + ticket_id,
                 success: function(data) {
-                    notificacion("success", "Imprimiendo ticket...", "toast-top-right");
+                    notificacion("success", "Imprimiendo pago...", "toast-top-right");
                     swal.close();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -628,5 +741,48 @@
             });
         });
         
-    }        
+    }  
+    
+    function generarFactura(value)
+	{        
+        let cliente = $("#cliente_id_padre").val();
+
+        $("#cliente_ruc").prop("disabled", !value);
+        $("#cliente_nombre").prop("disabled", !value);
+        $("#factura_concepto").prop("disabled", !value);
+        
+        $('[name="cliente_ruc"]').val("");
+        $('[name="cliente_nombre"]').val("");
+        $('[name="factura_concepto"]').val("");
+
+        $("form").parsley().reset();
+        if (!value) {
+            $('[name="cliente_ruc"]').removeAttr('required');
+            $('[name="cliente_nombre"]').removeAttr('required');
+            $('[name="factura_concepto"]').removeAttr('required');            
+            return;
+        }else{
+            $('[name="cliente_ruc"]').attr('required', 'required');
+            $('[name="cliente_nombre"]').attr('required', 'required');
+            $('[name="factura_concepto"]').attr('required', 'required');
+        }
+
+        $.ajax({
+            url: "<?=base_url('clientes/getById/'); ?>" + cliente,
+            type: "GET",
+            dataType: "JSON",
+            beforeSend: function () {
+                //console.log("Procesando..")
+            },
+            success:  function (response) {
+                let ruc = response.cliente_ruc ?? response.cliente_ci;
+                let ruc_dv = response.cliente_ruc_dv ?? '??';
+                $('[name="cliente_nombre"]').val(response.cliente_nombre.toUpperCase().concat(" ").concat(response.cliente_apellido.toUpperCase()));
+                $('[name="cliente_ruc"]').val(ruc.concat('-').concat(ruc_dv));
+                
+            }
+        });
+        
+    }
+
 </script>

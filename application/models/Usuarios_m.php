@@ -16,21 +16,23 @@ class Usuarios_m extends CI_Model{
 	var $t4 = 'menu';
 	var $t5 = 'grupo_acciones';
 	var $t6 = 'grupo_permisos';
-    var $t7 = 'menu';    
+    var $t7 = 'menu';
+    var $t8 = 'sucursal';    
 	
 	/**
     *   Configuraciones de DATATABLE
     *   Tabla:  usuarios
     */
     //DATE_FORMAT(usuario_dateupdate, '%d-%m-%Y %H:%i') usuario_dateupdate
-    var $order_column   = array('usuario_id', "usuario_nombre_apellido", "usuario_user", "usuario_estado", null, null);
+    var $order_column   = array('usuario_id', "usuario_nombre_apellido", "usuario_user", "usuario_estado", null, null, null, "sucursal_descripcion");
     
     function make_query()
     {
-        $this->db->select('t1.usuario_id, concat(t1.usuario_nombre," ", t1.usuario_apellido) usuario_nombre_apellido, t1.usuario_user, t1.usuario_estado, group_concat(t3.grupo_nombre separator " | ") usuario_grupos, DATE_FORMAT(t1.usuario_dateinsert, "%d-%m-%Y %H:%i") usuario_dateinsert, DATE_FORMAT(t1.usuario_dateupdate, "%d-%m-%Y %H:%i") usuario_dateupdate');
+        $this->db->select('t1.usuario_id, concat(t1.usuario_nombre," ", t1.usuario_apellido) usuario_nombre_apellido, t1.usuario_user, t1.usuario_estado, group_concat(t3.grupo_nombre separator " | ") usuario_grupos, DATE_FORMAT(t1.usuario_dateinsert, "%d-%m-%Y %H:%i") usuario_dateinsert, DATE_FORMAT(t1.usuario_dateupdate, "%d-%m-%Y %H:%i") usuario_dateupdate, t4.sucursal_descripcion');
         $this->db->from($this->t1.' t1');
         $this->db->join($this->t3.' t2', 't1.usuario_id = t2.usuario_id', 'left');
         $this->db->join($this->t2.' t3', 't3.grupo_id = t2.grupo_id', 'left');
+        $this->db->join($this->t8.' t4', 't4.sucursal_id = t1.sucursal_id', 'left');
         
         $this->db->group_by('t1.usuario_id');        
         
@@ -40,6 +42,7 @@ class Usuarios_m extends CI_Model{
             $this->db->or_like("t1.usuario_apellido", $_POST["search"]["value"]);
             $this->db->or_like("t1.usuario_user", $_POST["search"]["value"]);
             $this->db->or_like("t1.usuario_dateinsert", $_POST["search"]["value"]);
+            $this->db->or_like("t4.sucursal_descripcion", $_POST["search"]["value"]);
             $this->db->group_end();
             $this->db->where('t1.usuario_estado <>', 'borrado');
         }
@@ -230,6 +233,15 @@ class Usuarios_m extends CI_Model{
 	public function listar_menu_nivel($nivel) {
 		$this->db->from($this->t1);
 		$this->db->where('menu_nivel', $nivel);
+		$consulta = $this->db->get();
+		$resultado = $consulta->result();
+		return $resultado;
+	}
+
+    // Sucursal
+    public function getAllSucursal() {
+		$this->db->from($this->t8);
+		//$this->db->where('estado', 1);
 		$consulta = $this->db->get();
 		$resultado = $consulta->result();
 		return $resultado;

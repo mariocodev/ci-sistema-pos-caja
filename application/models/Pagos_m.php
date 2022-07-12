@@ -20,7 +20,9 @@ class Pagos_m extends CI_Model
 	var $t7 = 'pago_cliente';    
 	var $t8 = 'pago_cliente_detalle';    
 	var $t9 = 'usuarios';    
-	var $t10 = 'pago_forma';    
+	var $t10 = 'pago_forma'; 
+    var $t11 = 'timbrado';
+    var $t12 = 'factura';   
 	
 	/**
     *   Configuraciones de DATATABLE
@@ -38,7 +40,7 @@ class Pagos_m extends CI_Model
             $this->db->like("pago_cliente_id", $_POST["search"]["value"]);
             $this->db->or_like("concat(t2.cliente_nombre,' ', t2.cliente_apellido)", $_POST["search"]["value"]);
             $this->db->or_like("concat(t3.usuario_nombre,' ', t3.usuario_apellido)", $_POST["search"]["value"]);
-            $this->db->or_like("t1.pago_cliente_fecha", $_POST["search"]["value"]);
+            $this->db->or_like("DATE_FORMAT(t1.pago_cliente_fecha, '%d-%m-%Y %H:%i')", $_POST["search"]["value"]);
             //$this->db->or_where_in("cliente_id", 3);
         }        
     }
@@ -155,10 +157,36 @@ class Pagos_m extends CI_Model
         $query = $this->db->get();
         return $query->row('planes_costo');
     }
+
+    // Total monto plan
+    public function total_monto_plan($pago_cliente_id){
+        $this->db->select('SUM(pago_cliente_detalle_monto_plan) monto_plan');
+        $this->db->from($this->t8);
+        $this->db->where('pago_cliente_id',$pago_cliente_id);
+        $query = $this->db->get();
+        return $query->row('monto_plan');
+    }
     
     // Obtener total de pagos plan + adicional
-    public function total_plan_adicional($pago_cliente_id){
-        $this->db->select('SUM(pago_cliente_detalle_monto_plan + pago_cliente_detalle_monto_adicional) monto_plan');
+    public function total_monto_adicional($pago_cliente_id){
+        $this->db->select('SUM(pago_cliente_detalle_monto_adicional) monto_plan');
+        $this->db->from($this->t8);
+        $this->db->where('pago_cliente_id',$pago_cliente_id);
+        $query = $this->db->get();
+        return $query->row('monto_plan');
+    }
+
+    public function total_monto_iva($pago_cliente_id){
+        $this->db->select('SUM(pago_cliente_detalle_iva) monto_plan');
+        $this->db->from($this->t8);
+        $this->db->where('pago_cliente_id',$pago_cliente_id);
+        $query = $this->db->get();
+        return $query->row('monto_plan');
+    }
+    // Obtener total de pagos plan + adicional
+    public function total_plan_adicional_iva($pago_cliente_id){
+        //$this->db->select('SUM(pago_cliente_detalle_monto_plan + pago_cliente_detalle_monto_adicional + pago_cliente_detalle_iva) monto_plan');
+        $this->db->select('SUM(pago_cliente_detalle_monto_plan + pago_cliente_detalle_monto_adicional + pago_cliente_detalle_iva) monto_plan');
         $this->db->from($this->t8);
         $this->db->where('pago_cliente_id',$pago_cliente_id);
         $query = $this->db->get();
@@ -175,12 +203,13 @@ class Pagos_m extends CI_Model
     {
         $qry_lang_date = "SET lc_time_names = 'es_ES'";
 		$this->db->query($qry_lang_date);
-		$this->db->select("concat(t2.cliente_nombre, ' ', t2.cliente_apellido) cliente, t2.cliente_direccion, t2.cliente_estado, t2.cliente_cel, FORMAT(t2.cliente_ci, 0, 'de_DE') cliente_ci, DATE_FORMAT(t1.pago_cliente_dateinsert, '%d-%m-%Y') pago_cliente_fecha, , DATE_FORMAT(t1.pago_cliente_dateinsert, '%H:%i:%s') pago_cliente_hora, t1.pago_cliente_estado, concat(t3.usuario_nombre, ' ', t3.usuario_apellido) cobrador, FORMAT(sum(t4.pago_cliente_detalle_monto_plan), 0, 'de_DE') pago_cliente_monto_plan, FORMAT(sum(t4.pago_cliente_detalle_monto_adicional), 0, 'de_DE') pago_cliente_detalle_monto_adicional, FORMAT(t1.pago_cliente_monto_plan, 0, 'de_DE') total_pago, t1.pago_cliente_cuotas, FORMAT(t1.pago_cliente_monto_total, 0, 'de_DE') pago_cliente_monto_total, case when MONTH(t1.pago_cliente_fecha) = MONTH(t1.pago_cliente_fecha_hasta) then DATE_FORMAT(t1.pago_cliente_fecha, '%M') else concat(DATE_FORMAT(t1.pago_cliente_fecha, '%M'), ' a ', DATE_FORMAT(t1.pago_cliente_fecha_hasta, '%M')) end pago_cliente_desde_hasta, t5.pago_forma_alias");
+		$this->db->select("concat(t2.cliente_nombre, ' ', t2.cliente_apellido) cliente, t2.cliente_direccion, t2.cliente_estado, t2.cliente_cel, FORMAT(t2.cliente_ci, 0, 'de_DE') cliente_ci, DATE_FORMAT(t1.pago_cliente_dateinsert, '%d-%m-%Y') pago_cliente_fecha, , DATE_FORMAT(t1.pago_cliente_dateinsert, '%H:%i:%s') pago_cliente_hora, t1.pago_cliente_estado, concat(t3.usuario_nombre, ' ', t3.usuario_apellido) cobrador, FORMAT(sum(t4.pago_cliente_detalle_monto_plan), 0, 'de_DE') pago_cliente_monto_plan, FORMAT(sum(t4.pago_cliente_detalle_monto_adicional), 0, 'de_DE') pago_cliente_detalle_monto_adicional, FORMAT(t1.pago_cliente_monto_plan, 0, 'de_DE') total_pago, t1.pago_cliente_cuotas, FORMAT(t1.pago_cliente_monto_total, 0, 'de_DE') pago_cliente_monto_total, case when MONTH(t1.pago_cliente_fecha) = MONTH(t1.pago_cliente_fecha_hasta) then DATE_FORMAT(t1.pago_cliente_fecha, '%M') else concat(DATE_FORMAT(t1.pago_cliente_fecha, '%M'), ' a ', DATE_FORMAT(t1.pago_cliente_fecha_hasta, '%M')) end pago_cliente_desde_hasta, t5.pago_forma_alias, FORMAT(sum(t4.pago_cliente_detalle_iva), 0, 'de_DE') pago_cliente_detalle_iva, t1.factura_nro, t1.factura_ruc, t1.factura_razon_social, t1.factura_concepto, FORMAT((t1.pago_cliente_monto_plan*t1.pago_cliente_cuotas)+sum(t4.pago_cliente_detalle_monto_adicional), 0, 'de_DE') subtotal_pago, FORMAT(t1.pago_cliente_monto_iva, 0, 'de_DE') pago_cliente_monto_iva, FORMAT(t4.pago_cliente_detalle_subtotal, 0, 'de_DE') pago_cliente_detalle_subtotal ");
         $this->db->from($this->t7.' t1');
         $this->db->join($this->t1.' t2', 't1.cliente_id = t2.cliente_id', 'left');
         $this->db->join($this->t9.' t3', 't1.usuario_id = t3.usuario_id', 'left');
         $this->db->join($this->t8.' t4', 't4.pago_cliente_id = t1.pago_cliente_id', 'left');
         $this->db->join($this->t10.' t5', 't5.pago_forma_id = t1.pago_forma_id', 'left');
+        //$this->db->join($this->t12.' t6', 't6.factura_id = t1.factura_id', 'left');
 		$this->db->where('t1.pago_cliente_id', $pago_cliente_id);        
         $query = $this->db->get();
         return $query->row();
@@ -189,7 +218,7 @@ class Pagos_m extends CI_Model
     // Listar detalle del ticket
 	// Sirve para imprimir el ticket tambien
     public function datatableVerDetalle($pago_cliente_id){
-        $this->db->select("t4.cliente_id, concat(t4.cliente_nombre, ' ', t4.cliente_apellido) cliente, CASE WHEN (YEAR(CURDATE()) - YEAR(t4.cliente_fecha_nacimiento)) = YEAR(CURDATE()) THEN 'ND' ELSE YEAR(CURDATE()) - YEAR(t4.cliente_fecha_nacimiento) END edad, CASE WHEN (YEAR(CURDATE()) - YEAR(t4.cliente_fecha_nacimiento)) = YEAR(CURDATE()) THEN CONCAT(t6.plan_categoria_nombre, ' - ', t3.planes_clientes_estado) ELSE CONCAT(t6.plan_categoria_nombre, ' (', `t7`.`plan_rango_edad_nombre`, ') ', t3.planes_clientes_estado) END plan, t6.plan_categoria_nombre plan2, FORMAT(t1.pago_cliente_detalle_monto_adicional, 0, 'de_DE') pago_cliente_detalle_monto_adicional, case when t3.planes_clientes_modificar_monto = 'si' then FORMAT(t3.planes_clientes_monto, 0, 'de_DE') else FORMAT(t1.pago_cliente_detalle_monto_plan, 0, 'de_DE') end pago_cliente_detalle_monto_plan");
+        $this->db->select("t4.cliente_id, concat(t4.cliente_nombre, ' ', t4.cliente_apellido) cliente, CASE WHEN (YEAR(CURDATE()) - YEAR(t4.cliente_fecha_nacimiento)) = YEAR(CURDATE()) THEN 'ND' ELSE YEAR(CURDATE()) - YEAR(t4.cliente_fecha_nacimiento) END edad, CASE WHEN (YEAR(CURDATE()) - YEAR(t4.cliente_fecha_nacimiento)) = YEAR(CURDATE()) THEN CONCAT(t6.plan_categoria_nombre, ' - ', t3.planes_clientes_estado) ELSE CONCAT(t6.plan_categoria_nombre, ' (', `t7`.`plan_rango_edad_nombre`, ') ', t3.planes_clientes_estado) END plan, t6.plan_categoria_nombre plan2, FORMAT(t1.pago_cliente_detalle_monto_adicional, 0, 'de_DE') pago_cliente_detalle_monto_adicional, case when t3.planes_clientes_modificar_monto = 'si' then FORMAT(t3.planes_clientes_monto, 0, 'de_DE') else FORMAT(t1.pago_cliente_detalle_monto_plan, 0, 'de_DE') end pago_cliente_detalle_monto_plan, FORMAT(t1.pago_cliente_detalle_iva, 0, 'de_DE') pago_cliente_detalle_iva, , FORMAT(t1.pago_cliente_detalle_subtotal, 0, 'de_DE') pago_cliente_detalle_subtotal");
         $this->db->from($this->t8.' t1');
         $this->db->join($this->t7.' t2', 't1.pago_cliente_id = t2.pago_cliente_id', 'right');
         $this->db->join($this->t6.' t3', 't1.planes_clientes_id = t3.planes_clientes_id', 'right');
@@ -316,4 +345,13 @@ class Pagos_m extends CI_Model
 		$resultado    = $consulta->result();
 		return $resultado;
 	}
+
+    // Recuperar timbrado activo
+    public function getTimbradoActivo()
+    {
+        $this->db->from($this->t11);
+        $this->db->where('estado', 1);
+        $query = $this->db->get();
+        return $query->row();
+    }
 }

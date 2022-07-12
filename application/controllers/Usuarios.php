@@ -55,6 +55,7 @@ class Usuarios extends CI_Controller
             $sub_array[] = $row->usuario_grupos;
             $sub_array[] = $row->usuario_dateinsert;
             $sub_array[] = $row->usuario_dateupdate;
+            $sub_array[] = $row->sucursal_descripcion;
             $sub_array[] = '';
             $data[]      = $sub_array;
         }
@@ -105,6 +106,12 @@ class Usuarios extends CI_Controller
         $data = $this->usuarios_m->obtener_por_id($id);
         echo json_encode($data);
     }
+
+    public function getAllSucursal()
+    {
+        $data = $this->usuarios_m->getAllSucursal();
+        echo json_encode($data);
+    }
     
     public function actualizar()
     {
@@ -113,7 +120,8 @@ class Usuarios extends CI_Controller
             'usuario_apellido'  => $this->input->post('usuario_apellido'),
             'usuario_user'      => $this->input->post('usuario_user'),
             'usuario_pass'      => md5($this->input->post('usuario_pass')),
-            'usuario_estado'    => $this->input->post('usuario_estado')
+            'usuario_estado'    => $this->input->post('usuario_estado'),
+            'sucursal_id'       => $this->input->post('sucursal_id'),
         );
         if ($this->input->post('usuario_pass') == '') {
             unset($data['usuario_pass']);

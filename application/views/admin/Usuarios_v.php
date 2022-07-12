@@ -9,6 +9,7 @@
             <th>Grupo</th>
             <th>Registrado</th>
             <th>Actualizado</th>
+            <th>Sucursal</th>
             <th data-priority="3">Acciones</th>
         </tr>
     </thead>
@@ -71,15 +72,23 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="sucursal" class="control-label">Sucursal <small id="loadSucursal"></small></label>
+                                <select class="form-control" id="sucursal" name="sucursal_id" required=""></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label for="usuario_estado" class="control-label">Grupo</label>
+                                <label for="select_grupo" class="control-label">Grupo</label>
                                 <select id="select_grupo" class="select2 select2-multiple" multiple="multiple" multiple
                                         data-placeholder="Seleccionar ..." name="my_multi_select1[]" required="">
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                     <div class="modal-footer">
                         <button type="submit" id="btn-guardar" onclick="enviar_datos()"
                         class="btn btn-info waves-effect waves-light">Guardar</button>
@@ -277,7 +286,8 @@
         $('#modal_form1').modal('show'); // mostrar bootstrap modal
         $('.modal-title').text('Nuevo usuario'); // Setear Title to Bootstrap modal title
         $("#usuario_pass").prop('required',true); // required solo al agregar usuario
-        listar_grupo(0)
+        listar_grupo(0);
+        sucursal(0);
         $("#form1").parsley().reset();
     }
 
@@ -301,6 +311,7 @@
                 $('[name="usuario_apellido"]').val(data.usuario_apellido);
                 $('[name="usuario_user"]').val(data.usuario_user);
                 $('[name="usuario_estado"]').val(data.usuario_estado);
+                sucursal(data.sucursal_id);
                 $('#modal_form1').modal('show'); // show bootstrap modal when complete loaded
                 $('.modal-title').text('Editar usuario'); // Set title to Bootstrap modal title
             },
@@ -310,6 +321,31 @@
         });
         listar_grupo(id);
     }
+
+    // Call AJAX Select
+    function sucursal(sucursal_id){
+        $.ajax({
+            url: "<?=base_url(strtolower($this->router->class.'/getAllSucursal/')); ?>",
+            type:  'GET',
+            dataType: 'json',
+            beforeSend: function () {
+                $("small#loadSucursal").html("Procesando, espere por favor...");
+            },
+            success: function (response) {
+                $("#sucursal").empty();
+                $("small#loadSucursal").html("");
+                $.each(response, function(key, data) {
+                    $("#sucursal").append('<option value='+data.sucursal_id+'>'+data.sucursal_descripcion+'</option>');
+                });
+                if (sucursal_id > 0)
+                    $('#sucursal option[value="'+sucursal_id+'"]').prop('selected', true);
+            },
+            error: function(data) {
+                console.log('error');
+            }
+        });
+    }
+
     function enviar_datos() {
         //$('.parsley-errors-list').css('display','block');
         $("form").submit(function (e) {
