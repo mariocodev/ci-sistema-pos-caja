@@ -163,6 +163,8 @@ File: Menu
 #topnav .navigation-menu li.active > a {
   color: #7974AC;
   border-color: #7974AC;
+  font-weight: bolder;
+  background-color: #e7e7e7;
 }
 #topnav .navigation-menu li.active > a i {
   color: #7974AC;

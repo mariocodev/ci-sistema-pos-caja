@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="background-image: url('<?=base_url('template/assets/images/')?>/bg-01.jpg');background-repeat: round;">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
 
         <link rel="shortcut icon" href="<?=base_url('template/assets/images/brandicono.png')?>">
 
-        <title>SAF : <?=ucfirst($this->router->class)?> | Monte Olivos</title>
+        <title>SAF : <?=ucfirst($this->router->class)?> | AdminBase</title>
 
         <!-- Sweet Alert css -->
         <link href="<?=base_url('template/assets/plugins/bootstrap-sweetalert/')?>sweet-alert.css" rel="stylesheet" type="text/css" />
@@ -50,4 +50,4 @@
             //TableManageButtons.init();
         </script>
     </head>
-    <body>
+    <body style="background-color: transparent;">

@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `monteoli_saf_db` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `monteoli_saf_db`;
+CREATE DATABASE  IF NOT EXISTS `adminbase_db` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `adminbase_db`;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: monteoli_saf_db
