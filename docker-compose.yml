@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ci3-docker
+    ports:
+      - "${APACHE_PORT:-8080}:80"  # Usa variable con valor por defecto
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env  # Carga variables desde archivo
+    #extra_hosts:
+      #- "host.docker.internal:host-gateway" # para acceder a la red local desde el contenedor
+  

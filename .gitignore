@@ -1,0 +1,18 @@
+# .gitignore
+# Ignorar logs de CodeIgniter
+application/logs/
+
+# Ignorar archivos de entorno y configuración sensible
+.env
+docker-compose.override.yml
+
+# Archivos de Docker
+docker-data/
+
+# Entornos de desarrollo
+.vscode/
+.idea/
+
+# Dependencias
+vendor/
+node_modules/
