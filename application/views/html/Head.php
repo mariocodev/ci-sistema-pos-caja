@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html style="background-image: url('<?=base_url('template/assets/images/')?>/bg-01.jpg');background-repeat: round;">
+<html style="background-image: url('<?=base_url('template/assets/images/')?>bg-01.jpg');background-size: cover;background-position: center;">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">

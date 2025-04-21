@@ -1,9 +1,9 @@
 <?php
 //  Para imprimir ticket
 // Local
-require '\application\third_party\ticket\autoload.php';
+//require '\application\third_party\ticket\autoload.php';
 // Server
-//require_once(APPPATH.'/third_party/ticket/autoload.php');
+require_once(APPPATH.'/third_party/ticket/autoload.php');
 
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;

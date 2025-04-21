@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -7,11 +5,56 @@ services:
       dockerfile: Dockerfile
     container_name: ci3-docker
     ports:
-      - "${APACHE_PORT:-8080}:80"  # Usa variable con valor por defecto
+      - "${APACHE_PORT:-8080}:80"
     volumes:
       - .:/var/www/html
     env_file:
-      - .env  # Carga variables desde archivo
-    #extra_hosts:
-      #- "host.docker.internal:host-gateway" # para acceder a la red local desde el contenedor
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Formato correcto
+
+  db:
+    image: mysql:8.0
+    container_name: ci3-mysql
+    restart: always
+    environment:
+      MYSQL_INITDB_SKIP_TZINFO: 1
+      MYSQL_INITDB_CHARSET: utf8mb4
+      MYSQL_INITDB_COLLATION: utf8mb4_unicode_ci
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS:-root}"
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASS}"
+    ports:
+      - "${DB_PORT:-3306}:3306"    
+    command: [
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci',
+      '--skip-character-set-client-handshake',
+      '--sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION',
+      '--default-authentication-plugin=mysql_native_password'
+    ]
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./files/db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
   
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ci3-phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+
+volumes:
+  db_data:
