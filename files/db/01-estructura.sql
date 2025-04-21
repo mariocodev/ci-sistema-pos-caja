@@ -1,8 +1,7 @@
-CREATE DATABASE  IF NOT EXISTS `adminbase_db` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `adminbase_db`;
+SET NAMES utf8mb4;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: monteoli_saf_db
+-- Host: localhost    Database: pos_system
 -- ------------------------------------------------------
 -- Server version	5.5.5-10.4.10-MariaDB
 
@@ -34,7 +33,7 @@ CREATE TABLE `auditoria_logs` (
   PRIMARY KEY (`auditoria_id`),
   KEY `fk_usuario_id_x3_idx` (`usuario_id`),
   CONSTRAINT `fk_usuario_id_x3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +68,7 @@ CREATE TABLE `caja_cab` (
   PRIMARY KEY (`caja_cab_id`),
   KEY `fk_caja_cab_usuarios1_idx` (`usuarios_id`),
   CONSTRAINT `fk_caja_cab_usuarios1` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`usuario_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,7 +99,7 @@ CREATE TABLE `caja_det` (
   KEY `fk_Caja_det_moneda1_idx` (`moneda_id`),
   CONSTRAINT `fk_Caja_det_caja_cab1` FOREIGN KEY (`caja_cab_id`) REFERENCES `caja_cab` (`caja_cab_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Caja_det_moneda1` FOREIGN KEY (`moneda_id`) REFERENCES `moneda` (`moneda_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,7 +124,7 @@ CREATE TABLE `ci_sessions` (
   `timestamp` int(10) unsigned NOT NULL DEFAULT 0,
   `data` blob NOT NULL,
   KEY `ci_sessions_timestamp` (`timestamp`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +165,7 @@ CREATE TABLE `clientes` (
   CONSTRAINT `cliente_id_padre` FOREIGN KEY (`cliente_id_padre`) REFERENCES `clientes` (`cliente_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `cliente_tipo_id` FOREIGN KEY (`cliente_tipo_id`) REFERENCES `clientes_tipo` (`cliente_tipo_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `usuario_id` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +189,7 @@ CREATE TABLE `clientes_tipo` (
   `cliente_tipo_nombre` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
   `cliente_tipo_descripcion` varchar(100) COLLATE utf8_spanish_ci DEFAULT NULL,
   PRIMARY KEY (`cliente_tipo_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -215,7 +214,7 @@ CREATE TABLE `grupo` (
   `grupo_dateupdate` timestamp NOT NULL DEFAULT current_timestamp(),
   `grupo_dateinsert` datetime NOT NULL,
   PRIMARY KEY (`grupo_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,7 +238,7 @@ CREATE TABLE `grupo_acciones` (
   `grupo_acciones_nombre` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
   `grupo_acciones_descripcion` varchar(100) COLLATE utf8_spanish_ci DEFAULT NULL,
   PRIMARY KEY (`grupo_acciones_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,7 +268,7 @@ CREATE TABLE `grupo_permisos` (
   CONSTRAINT `fk_menu_id3` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`menu_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_perfil_acciones_id1` FOREIGN KEY (`grupo_acciones_id`) REFERENCES `grupo_acciones` (`grupo_acciones_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_perfil_id3` FOREIGN KEY (`grupo_id`) REFERENCES `grupo` (`grupo_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -296,7 +295,7 @@ CREATE TABLE `grupo_usuarios` (
   KEY `fk_perfil_id_idx` (`grupo_id`),
   CONSTRAINT `fk_perfil_id1` FOREIGN KEY (`grupo_id`) REFERENCES `grupo` (`grupo_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_usuario_id1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +322,7 @@ CREATE TABLE `menu` (
   `menu_icono` varchar(45) DEFAULT NULL,
   `menu_controlador` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,7 +346,7 @@ CREATE TABLE `moneda` (
   `moneda_descripcion` varchar(45) NOT NULL,
   `moneda_valor` decimal(10,0) NOT NULL COMMENT 'Ejemplo\\nId	Descripcion	Valor\\n1	100.000 mil	 100000 \\n2	50.000 mil	 50000 \\n3	20.000 mil	 20000 \\n4	10.000 mil	 10000 \\n5	5.000 mil	 5000 \\n6	2.000 mil	 2000 \\n7	1.000 mil	 1000 \\n8	500 mil	 500 \\n9	100 mil	 100 \\n10	50 mil	 50 ',
   PRIMARY KEY (`moneda_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -388,7 +387,7 @@ CREATE TABLE `pago_cliente` (
   CONSTRAINT `cliente_id` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`cliente_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `pago_forma_id` FOREIGN KEY (`pago_forma_id`) REFERENCES `pago_forma` (`pago_forma_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `usuario_id_pago_cliente` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -418,7 +417,7 @@ CREATE TABLE `pago_cliente_detalle` (
   KEY `planes_clientes_id_idx` (`planes_clientes_id`),
   CONSTRAINT `pago_cliente_id` FOREIGN KEY (`pago_cliente_id`) REFERENCES `pago_cliente` (`pago_cliente_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `planes_clientes_id` FOREIGN KEY (`planes_clientes_id`) REFERENCES `planes_clientes` (`planes_clientes_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -443,7 +442,7 @@ CREATE TABLE `pago_forma` (
   `pago_forma_tipo` varchar(45) DEFAULT NULL,
   `pago_forma_alias` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`pago_forma_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -472,7 +471,7 @@ CREATE TABLE `planes` (
   KEY `rango_edad_id_idx` (`plan_rango_edad_id`),
   CONSTRAINT `plan_categoria_id` FOREIGN KEY (`plan_categoria_id`) REFERENCES `planes_categoria` (`plan_categoria_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `plan_rango_edad_id` FOREIGN KEY (`plan_rango_edad_id`) REFERENCES `planes_rango_edad` (`plan_rango_edad_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -495,7 +494,7 @@ CREATE TABLE `planes_categoria` (
   `plan_categoria_id` int(11) NOT NULL AUTO_INCREMENT,
   `plan_categoria_nombre` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
   PRIMARY KEY (`plan_categoria_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -528,7 +527,7 @@ CREATE TABLE `planes_clientes` (
   KEY `plan_id_idx` (`plan_id`),
   CONSTRAINT `clientes_id` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`cliente_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `plan_id` FOREIGN KEY (`plan_id`) REFERENCES `planes` (`plan_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -556,7 +555,7 @@ CREATE TABLE `planes_rango_edad` (
   PRIMARY KEY (`plan_rango_edad_id`),
   KEY `vigencia_id_idx` (`plan_vigencia_id`),
   CONSTRAINT `plan_vigencia_id` FOREIGN KEY (`plan_vigencia_id`) REFERENCES `planes_vigencia` (`plan_vigencia_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -580,7 +579,7 @@ CREATE TABLE `planes_vigencia` (
   `plan_vigencia_nombre` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
   `plan_vigencia_dias` int(11) DEFAULT NULL,
   PRIMARY KEY (`plan_vigencia_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -604,7 +603,7 @@ CREATE TABLE `sucursal` (
   `sucursal_descripcion` varchar(45) DEFAULT NULL,
   `sucursal_direccion` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`sucursal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -638,7 +637,7 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `usuario_user_UNIQUE` (`usuario_user`),
   KEY `sucursal_id_idx` (`sucursal_id`),
   CONSTRAINT `sucursal_id` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursal` (`sucursal_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -651,11 +650,11 @@ LOCK TABLES `usuarios` WRITE;
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'monteoli_saf_db'
+-- Dumping events for database 'pos_system'
 --
 
 --
--- Dumping routines for database 'monteoli_saf_db'
+-- Dumping routines for database 'pos_system'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

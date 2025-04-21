@@ -1,9 +1,9 @@
+SET NAMES utf8mb4;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: monteoli_saf_db
+-- Host: localhost    Database: pos_system
 -- ------------------------------------------------------
 -- Server version	5.7.14
-use `adminbase_db`;
 INSERT INTO `usuarios` (`usuario_nombre`, `usuario_apellido`, `usuario_user`, `usuario_pass`, `usuario_estado`, `usuario_dateinsert`, `usuario_dateupdate`) 
 VALUES ('Miroslav', 'Valsorim', 'superadmin', 'e10adc3949ba59abbe56e057f20f883e', 'activo', NOW(), NOW()),
 ('Administrador', 'Sistema', 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'activo', NOW(), NOW());
