@@ -58,7 +58,7 @@ Aplicación web de sistema POS y Apertura / Cierre de CAJA. Basado en el framewo
 ---
 
 ## Uso
-### Configuración inicial
+### Levantar el proyecto manualmente
 
 A continuación se describe algunas configuraciones necesarias para levantar el proyecto en un entorno local
 
@@ -99,15 +99,17 @@ A continuación se describe algunas configuraciones necesarias para levantar el 
 ---
 
 ### Levantar el proyecto con Docker
-1. **Construir las imágenes**:
+1. **Configuración incial**
+  Renombrar el archivo `.env.example` a `.env` y agregar configuraciones necesarias.
+2. **Construir las imágenes**:
   ```bash
   docker-compose build
   ```
-2. **Levantar los contenedores:**
+3. **Levantar los contenedores:**
   ```bash
   docker-compose up -d
   ```
-3. **Acceder al sistema:**
+4. **Acceder al sistema:**
 
 * URL: http://localhost:8080
 * Credenciales:
