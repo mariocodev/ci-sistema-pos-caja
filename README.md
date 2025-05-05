@@ -99,8 +99,10 @@ A continuación se describe algunas configuraciones necesarias para levantar el 
 ---
 
 ### Levantar el proyecto con Docker
-1. **Configuración incial**
-  Renombrar el archivo `.env.example` a `.env` y agregar configuraciones necesarias.
+1. **Configuración inicial:**
+  
+  Renombrar el archivo `.env.example` a `.env` y agregar las  configuraciones necesarias.
+
 2. **Construir las imágenes**:
   ```bash
   docker-compose build
